@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import PWAScript from './PWAScript';
 
 export const metadata: Metadata = {
   title: {
@@ -33,11 +34,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/icons/icon-192.png" />
+        <meta name="theme-color" content="#e50914" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className="bg-cine-bg text-cine-text antialiased">
         <Navbar />
         <main className="min-h-screen">{children}</main>
         <Footer />
+        <PWAScript />
       </body>
     </html>
   );

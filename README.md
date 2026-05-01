@@ -1,264 +1,209 @@
 # 🎬 CineStream
 
-A Netflix-style movie & TV streaming site built with **Next.js 14**, powered by **TMDb** for metadata and free embed providers for video playback. No database required.
+[![PWA][pwa-badge]][pwa-url] [![License: MIT][license-badge]][license-url]
+
+A premium, Netflix-style movie and TV series streaming platform built with **Next.js 14**, powered by **TMDb** metadata and delivered as a Progressive Web App.
+
+> **No database required** • **Vercel-ready** • **Installable on mobile & desktop**
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-14.2.35-black?logo=next.js&logoColor=white" alt="Next.js" />
+  <img src="https://img.shields.io/badge/Tailwind-v3.4-38B2AC?logo=tailwindcss" alt="Tailwind" />
+  <img src="https://img.shields.io/badge/TypeScript-5.5-3178C6?logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/TMDb-API-032541?logo=movies&color=01ADBB" alt="TMDb" />
+</p>
 
 ---
 
-## ✨ Features
+## 🌟 Overview
 
-- 🎬 **Movies & TV Shows** — full metadata (title, description, cast, genres, ratings, runtime)
-- 🖼️ **High-quality banners & posters** via TMDb CDN
-- ▶️ **Fullscreen video player** with 3 free sources (vidsrc.xyz, vidsrc.me, vidsrc.to)
-- 🔄 **Source switcher** — try another if one fails
-- 📺 **TV episode selector** — browse seasons and episodes
-- 🔍 **Search** across movies and TV shows
-- 🌟 **Trending, Popular, Top Rated** rows with horizontal scroll
-- 🎭 **Cast grid** with actor photos and characters
-- 📱 **Fully responsive** — mobile, tablet, desktop
-- ⚡ **Fast** — Next.js caching with 1-hour revalidation
-- 🚀 **Vercel-ready** — deploy in one click
+CineStream delivers a **premium, app-like streaming experience** on every device.
+
+- 🎬 **Thousands of titles** — movies, series, originals, all sourced from TMDb.
+- 🖼️ **Cinematic UI** — hero banners, smooth transitions, dark-first design.
+- 📱 **PWA-first** — install on home screen, offline-ready shell, push-ready architecture.
+- 🔍 **Deep search** — instant results with genre, title, and keyword lookup.
+- ⚡ **Instant playback** — native vidsrc embeds with source fallback and quality selection.
 
 ---
 
-## 🖥️ Prerequisites
+## 📸 Screenshot
 
-Before you begin, make sure you have the following installed on your machine:
-
-| Tool | Version | Download |
-|------|---------|----------|
-| **Node.js** | v18+ | [nodejs.org](https://nodejs.org) |
-| **npm** | v9+ (comes with Node.js) | — |
-| **Git** | Latest | [git-scm.com](https://git-scm.com) |
-| **Git Bash** | Latest (Windows) | [gitforwindows.org](https://gitforwindows.org) |
-
-> 💡 **Windows users:** All commands below work in **Git Bash**. Open it by right-clicking any folder → *"Git Bash Here"*.
+<div align="center">
+  <sub>Dark cinematic UI, hero banners, genre rows, and native PWA install prompt.</sub>
+</div>
 
 ---
 
-## 🚀 Installation (Git Bash / macOS Terminal / Linux)
+## 🛠️ Getting Started
 
-### Step 1 — Check Node.js is installed
+### Prerequisites
+
+- Node.js ≥ 18
+- npm ≥ 9
+
+### Installation
+
 ```bash
-node -v
-# Should print v18.x.x or higher
-
-npm -v
-# Should print 9.x.x or higher
-```
-
-> If Node.js is not installed, download it from [nodejs.org](https://nodejs.org) (choose the LTS version), install it, then reopen Git Bash.
-
----
-
-### Step 2 — Clone the repository
-```bash
-git clone https://github.com/Mebot1x/cinestream.git
-```
-
----
-
-### Step 3 — Navigate into the project folder
-```bash
+# Clone the repo
+git clone https://github.com/hdytepo7hehe/cinestream.git
 cd cinestream
-```
 
----
-
-### Step 4 — Install dependencies
-```bash
+# Install dependencies
 npm install
+
+# Copy environment template
+cp .env.example .env.local
 ```
 
-> This downloads all required packages into a `node_modules/` folder. May take 1–2 minutes on first run.
+Edit `.env.local` and add your [TMDb API key](https://www.themoviedb.org/settings/api):
 
----
-
-### Step 5 — Run the development server
-```bash
-npm run dev
-```
-
-You should see:
-```
-▲ Next.js 14.2.3
-- Local:        http://localhost:3000
-- Ready in Xs
-```
-
-Open your browser and go to **[http://localhost:3000](http://localhost:3000)** 🎉
-
----
-
-## 🔑 Environment / API Keys
-
-The TMDb API key is already included in `.env` for testing. If you ever need to update it:
-
-```bash
-# Open .env in any text editor (Git Bash example using notepad)
-notepad .env
-
-# Or use nano/vim on Linux/macOS
-nano .env
-```
-
-Update these values:
 ```env
 NEXT_PUBLIC_TMDB_API_KEY=your_tmdb_api_key_here
 NEXT_PUBLIC_TMDB_BASE_URL=https://api.themoviedb.org/3
 NEXT_PUBLIC_TMDB_IMAGE_BASE=https://image.tmdb.org/t/p
 ```
 
-Get a free TMDb key at [themoviedb.org/settings/api](https://www.themoviedb.org/settings/api).
+> 🔒 Never commit `.env.local` — it is gitignored by default.
 
----
-
-## 📦 Available Scripts
-
-Run these inside the project folder in Git Bash:
+### Development
 
 ```bash
-# Start development server (with hot reload)
 npm run dev
+```
 
-# Build for production
+Open [http://localhost:3000](http://localhost:3000) — the app is live.
+
+### Production Build
+
+```bash
 npm run build
-
-# Start production server (after build)
 npm start
-
-# Run TypeScript type checker
-npx tsc --noEmit
-
-# Lint code
-npm run lint
 ```
 
 ---
 
-## 🌐 Deploy to Vercel
+## 🚀 Deployment
 
-### Option A — One-click deploy (recommended)
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Mebot1x/cinestream)
+### Vercel (Recommended)
 
-### Option B — Via Git Bash + Vercel CLI
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/hdytepo7hehe/cinestream)
+
+1. Click **Deploy with Vercel** or import the repo manually.
+2. Add `NEXT_PUBLIC_TMDB_API_KEY` in **Environment Variables**.
+3. Click **Deploy**.
+
+Your PWA will be live, installable, and served via CDN.
+
+### Manual (Docker)
+
 ```bash
-# Install Vercel CLI globally
-npm install -g vercel
-
-# Login to Vercel (opens browser)
-vercel login
-
-# Deploy from project folder
-cd cinestream
-vercel
-
-# Follow the prompts — done!
-```
-
-### Option C — Via Vercel Dashboard
-1. Go to [vercel.com/new](https://vercel.com/new)
-2. Click **"Import Git Repository"**
-3. Select **`Mebot1x/cinestream`**
-4. Click **Deploy** — Vercel auto-reads the `.env` file
-
----
-
-## 🛠️ Common Issues (Git Bash / Windows)
-
-### `npm: command not found`
-Node.js is not installed. Download from [nodejs.org](https://nodejs.org) and reopen Git Bash.
-
-### `EACCES: permission denied`
-```bash
-# Run Git Bash as Administrator, or prefix with:
-npx --yes next dev
-```
-
-### `Port 3000 already in use`
-```bash
-# Run on a different port
-npm run dev -- -p 3001
-```
-
-### `node_modules not found` after cloning
-```bash
-# Re-run install
-npm install
-```
-
-### Line ending warnings on Windows
-```bash
-# Configure Git to handle line endings automatically
-git config --global core.autocrlf true
+docker build -t cinestream .
+docker run -p 3000:3000 cinestream
 ```
 
 ---
 
-## 📁 Project Structure
+## 🌐 Features
+
+### For Users
+
+- **Home** — Cinematic hero banner with random featured title.
+- **Genre Browse** — Explore movies & TV by genre (15+ movie, 11+ TV genres).
+- **Detail Pages** — Cast, genres, trailers, and recommendations.
+- **Trailer Modal** — YouTube embeds without leaving the site.
+- **Player** — 3 source fallbacks, quality switching, fullscreen support.
+- **Search** — Instant, debounced search across titles.
+- **Installable** — PWA install prompt on Chrome/Edge/Safari.
+
+### For Developers
+
+- **Next.js 14 App Router** with SSR, ISR, and typed routes.
+- **Tailwind CSS** + custom design system (Cine colors).
+- **Type-safe TMDb client** with caching (1 hour).
+- **Responsive-first** (mobile, tablet, desktop).
+- **Service worker** with offline cache and auto-update.
+- **No backend required** — everything is edge-ready.
+
+---
+
+## 🗂️ Architecture
 
 ```
-cinestream/
-├── .env                              # API keys (included for testing)
-├── .env.example                      # Template for your own keys
-├── next.config.ts                    # Next.js config
-├── tailwind.config.ts                # Tailwind theme
-├── package.json                      # Dependencies & scripts
-└── src/
-    ├── app/
-    │   ├── page.tsx                  # Home (hero + rows)
-    │   ├── layout.tsx                # Root layout + Navbar
-    │   ├── loading.tsx               # Skeleton loader
-    │   ├── globals.css               # Global styles
-    │   ├── movies/page.tsx           # Movies listing
-    │   ├── movie/[id]/page.tsx       # Movie detail
-    │   ├── tv/page.tsx               # TV shows listing
-    │   ├── tv/[id]/page.tsx          # TV show detail
-    │   ├── watch/movie/[id]/         # Movie player
-    │   ├── watch/tv/[id]/[s]/[e]/    # TV player
-    │   └── search/page.tsx           # Search results
-    ├── components/
-    │   ├── Navbar.tsx                # Fixed nav + search
-    │   ├── Hero.tsx                  # Full-viewport hero banner
-    │   ├── MovieCard.tsx             # Poster card with hover
-    │   ├── MovieRow.tsx              # Horizontal scroll row
-    │   ├── VideoPlayer.tsx           # iframe player + source switcher
-    │   └── EpisodeSelector.tsx       # Season/episode picker
-    └── lib/
-        └── tmdb.ts                   # TMDb API client + TypeScript types
+src/
+├── app/                          # Next.js App Router
+│   ├── (main)/                   # Main pages
+│   │   ├── page.tsx              # Home (hero + rows)
+│   │   ├── movie/[id]/           # Movie detail
+│   │   ├── tv/[id]/              # TV show detail
+│   │   ├── watch/                # Video player pages
+│   │   ├── genre/                # Genre browse pages
+│   │   ├── search/               # Search results
+│   │   └── layout.tsx            # Root layout + Navbar + Footer
+│   └── components/
+│       ├── Navbar.tsx            # Fixed nav with genre dropdowns
+│       ├── Hero.tsx              # Hero banner (client)
+│       ├── MovieCard.tsx         # Poster card with hover
+│       ├── MovieRow.tsx          # Horizontal scroll row
+│       ├── VideoPlayer.tsx       # Player with 3-source fallback
+│       ├── TrailerModal.tsx      # YouTube modal (client)
+│       ├── EpisodeSelector.tsx   # TV season/episode picker
+│       └── ...
+├── lib/
+│   ├── tmdb.ts                   # TMDb SDK with types
+│   └── genres.ts                 # Static genre maps
+└── public/
+    ├── icons/                    # PWA icons
+    ├── manifest.json             # PWA manifest
+    └── sw.js                     # Service worker
 ```
 
 ---
 
-## 🎥 Video Sources
+## 🎨 Design Tokens
 
-| Source | Movie | TV Show |
-|--------|-------|---------|
-| **Source 1** — vidsrc.xyz | `vidsrc.xyz/embed/movie?tmdb={id}` | `vidsrc.xyz/embed/tv?tmdb={id}&season={s}&episode={e}` |
-| **Source 2** — vidsrc.me | `vidsrc.me/embed/movie?tmdb={id}` | `vidsrc.me/embed/tv?tmdb={id}&season={s}&episode={e}` |
-| **Source 3** — vidsrc.to | `vidsrc.to/embed/movie/{id}` | `vidsrc.to/embed/tv/{id}/{s}/{e}` |
-
-> 💡 **Tip:** Install [uBlock Origin](https://ublockorigin.com) for the best ad-free experience with embed sources.
-
----
-
-## 🛠️ Tech Stack
-
-| Tool | Purpose |
-|------|---------|
-| Next.js 14 | Framework (App Router, SSR) |
-| TypeScript | Type safety |
-| Tailwind CSS | Styling |
-| TMDb API | Movie/TV metadata |
-| vidsrc embeds | Video playback |
-| Lucide React | Icons |
-| Vercel | Hosting |
+| Token | Value | Usage |
+|-------|-------|-------|
+| **Cine Red** | `#e50914` | Primary actions, accents |
+| **Cine BG** | `#0a0a0a` | Body background |
+| **Cine Surface** | `#141414` | Cards, surfaces |
+| **Cine Surface-2** | `#1a1a1a` | Hover states |
+| **Cine Border** | `#2a2a2a` | Borders, dividers |
+| **Cine Muted** | `#808080` | Secondary text |
 
 ---
 
-## ⚠️ Legal Notice
+## 🤝 Contributing
 
-This project uses third-party embed services for video content. The site itself does not host any video files. Use responsibly and in accordance with your local laws.
+1. Fork the repo
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add: amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ---
 
-Made with ❤️ using CineStream
+## 📜 License
+
+Distributed under the **MIT License**. See `LICENSE` for more information.
+
+---
+
+## 🙏 Acknowledgements
+
+- [TMDb](https://www.themoviedb.org) — for movie/TV metadata & images
+- [Next.js](https://nextjs.org) — React framework
+- [Tailwind CSS](https://tailwindcss.com) — utility-first CSS
+- [vidsrc](https://vidsrc.me) — video embeds (third-party)
+- [YouTube Data API](https://developers.google.com/youtube) — trailers
+
+---
+
+<p align="center">
+  Built with ❤️ using CineStream
+</p>
+
+[pwa-badge]: https://img.shields.io/badge/PWA-Ready-000000?logo=appveyor&labelColor=2a2a2a
+[pwa-url]: #pwa-features
+[license-badge]: https://img.shields.io/badge/License-MIT-yellow.svg
+[license-url]: https://opensource.org/licenses/MIT
