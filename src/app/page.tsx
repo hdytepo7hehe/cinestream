@@ -1,4 +1,4 @@
-import Hero from '@/components/Hero';
+import HeroWrapper from '@/components/HeroWrapper';
 import MovieRow from '@/components/MovieRow';
 import {
   getTrendingMovies,
@@ -28,47 +28,24 @@ export default async function HomePage() {
     getPopularTV(),
   ]);
 
-  // Pick a random featured movie from trending for the hero
-  const heroItems = trendingMovies.results.filter(
-    (m) => m.backdrop_path && m.overview
-  );
-  const heroMovie = heroItems[Math.floor(Math.random() * Math.min(5, heroItems.length))];
+  // Pass all hero candidates to the client wrapper which picks randomly after mount
+  // This avoids SSR/client Math.random() hydration mismatch
+  const heroItems = trendingMovies.results
+    .filter((m) => m.backdrop_path && m.overview)
+    .slice(0, 8);
 
   return (
     <div className="bg-cine-bg">
-      <Hero movie={heroMovie} />
+      {/* HeroWrapper is a client component — randomises after hydration */}
+      <HeroWrapper items={heroItems} />
 
-      <div className="relative z-10 -mt-32 pb-16 space-y-8">
-        <MovieRow
-          title="🔥 Trending This Week"
-          items={trendingMovies.results}
-          mediaType="movie"
-        />
-        <MovieRow
-          title="▶️ Now Playing"
-          items={nowPlaying.results}
-          mediaType="movie"
-        />
-        <MovieRow
-          title="⭐ Popular Movies"
-          items={popularMovies.results}
-          mediaType="movie"
-        />
-        <MovieRow
-          title="🏆 Top Rated Movies"
-          items={topRatedMovies.results}
-          mediaType="movie"
-        />
-        <MovieRow
-          title="📺 Trending TV Shows"
-          items={trendingTV.results}
-          mediaType="tv"
-        />
-        <MovieRow
-          title="📺 Popular TV Shows"
-          items={popularTV.results}
-          mediaType="tv"
-        />
+      <div className="relative z-10 -mt-24 sm:-mt-32 pb-16 space-y-6 sm:space-y-8">
+        <MovieRow title="🔥 Trending This Week"  items={trendingMovies.results} mediaType="movie" />
+        <MovieRow title="▶️ Now Playing"          items={nowPlaying.results}     mediaType="movie" />
+        <MovieRow title="⭐ Popular Movies"       items={popularMovies.results}  mediaType="movie" />
+        <MovieRow title="🏆 Top Rated Movies"    items={topRatedMovies.results} mediaType="movie" />
+        <MovieRow title="📺 Trending TV Shows"   items={trendingTV.results}     mediaType="tv"    />
+        <MovieRow title="📺 Popular TV Shows"    items={popularTV.results}      mediaType="tv"    />
       </div>
     </div>
   );

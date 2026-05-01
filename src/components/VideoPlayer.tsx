@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Maximize2, ExternalLink, AlertCircle } from 'lucide-react';
+import { useState, useRef, useCallback } from 'react';
+import { Maximize2, Minimize2, AlertCircle, RefreshCw } from 'lucide-react';
 
 type SourceKey = 'vidsrc.xyz' | 'vidsrc.me' | 'vidsrc.to';
 
@@ -16,37 +16,45 @@ interface VideoPlayerProps {
 interface Source {
   key: SourceKey;
   label: string;
-  color: string;
+  activeClass: string;
 }
 
 const SOURCES: Source[] = [
-  { key: 'vidsrc.xyz', label: 'Source 1', color: 'bg-cine-red hover:bg-cine-red-dark' },
-  { key: 'vidsrc.me',  label: 'Source 2', color: 'bg-blue-600 hover:bg-blue-700' },
-  { key: 'vidsrc.to',  label: 'Source 3', color: 'bg-purple-600 hover:bg-purple-700' },
+  { key: 'vidsrc.xyz', label: 'Source 1', activeClass: 'bg-cine-red text-white' },
+  { key: 'vidsrc.me',  label: 'Source 2', activeClass: 'bg-blue-600 text-white' },
+  { key: 'vidsrc.to',  label: 'Source 3', activeClass: 'bg-purple-600 text-white' },
 ];
 
-function buildEmbedUrl(source: SourceKey, tmdbId: number, mediaType: 'movie' | 'tv', season?: number, episode?: number): string {
+function buildEmbedUrl(
+  source: SourceKey,
+  tmdbId: number,
+  mediaType: 'movie' | 'tv',
+  season?: number,
+  episode?: number
+): string {
   if (mediaType === 'movie') {
-    switch (source) {
-      case 'vidsrc.xyz': return `https://vidsrc.xyz/embed/movie?tmdb=${tmdbId}`;
-      case 'vidsrc.me':  return `https://vidsrc.me/embed/movie?tmdb=${tmdbId}`;
-      case 'vidsrc.to':  return `https://vidsrc.to/embed/movie/${tmdbId}`;
-    }
-  } else {
-    const s = season ?? 1;
-    const e = episode ?? 1;
-    switch (source) {
-      case 'vidsrc.xyz': return `https://vidsrc.xyz/embed/tv?tmdb=${tmdbId}&season=${s}&episode=${e}`;
-      case 'vidsrc.me':  return `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=${s}&episode=${e}`;
-      case 'vidsrc.to':  return `https://vidsrc.to/embed/tv/${tmdbId}/${s}/${e}`;
-    }
+    if (source === 'vidsrc.xyz') return `https://vidsrc.xyz/embed/movie?tmdb=${tmdbId}`;
+    if (source === 'vidsrc.me')  return `https://vidsrc.me/embed/movie?tmdb=${tmdbId}`;
+    return `https://vidsrc.to/embed/movie/${tmdbId}`;
   }
+  const s = season ?? 1;
+  const e = episode ?? 1;
+  if (source === 'vidsrc.xyz') return `https://vidsrc.xyz/embed/tv?tmdb=${tmdbId}&season=${s}&episode=${e}`;
+  if (source === 'vidsrc.me')  return `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=${s}&episode=${e}`;
+  return `https://vidsrc.to/embed/tv/${tmdbId}/${s}/${e}`;
 }
 
-export default function VideoPlayer({ tmdbId, mediaType, season, episode, title }: VideoPlayerProps) {
+export default function VideoPlayer({
+  tmdbId,
+  mediaType,
+  season,
+  episode,
+  title,
+}: VideoPlayerProps) {
   const [activeSource, setActiveSource] = useState<SourceKey>('vidsrc.xyz');
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [iframeError, setIframeError] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const embedUrl = buildEmbedUrl(activeSource, tmdbId, mediaType, season, episode);
 
@@ -55,74 +63,98 @@ export default function VideoPlayer({ tmdbId, mediaType, season, episode, title 
     setIframeError(false);
   };
 
+  // ✅ Real browser fullscreen API — single, works on mobile too
+  const toggleFullscreen = useCallback(async () => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    try {
+      if (!document.fullscreenElement) {
+        await el.requestFullscreen();
+        setIsFullscreen(true);
+      } else {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      }
+    } catch {
+      // Fallback: toggle CSS fullscreen for browsers that block API
+      setIsFullscreen((prev) => !prev);
+    }
+  }, []);
+
+  // Sync state when user presses Escape
+  if (typeof window !== 'undefined') {
+    document.onfullscreenchange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+  }
+
+  const episodeLabel =
+    mediaType === 'tv' && season && episode
+      ? ` — S${String(season).padStart(2, '0')}E${String(episode).padStart(2, '0')}`
+      : '';
+
   return (
-    <div className={`${isFullscreen ? 'fixed inset-0 z-50 bg-black' : 'w-full'}`}>
-      {/* Player header */}
-      <div className="flex items-center justify-between bg-cine-surface px-4 py-3 border-b border-cine-border">
-        <div className="flex items-center gap-3 flex-wrap">
-          <span className="text-white font-semibold text-sm truncate max-w-xs">
-            {title || 'Now Playing'}
-            {mediaType === 'tv' && season && episode && (
-              <span className="text-cine-muted ml-2">S{String(season).padStart(2,'0')}E{String(episode).padStart(2,'0')}</span>
-            )}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <a
-            href={embedUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2 text-cine-muted hover:text-white transition-colors"
-            title="Open in new tab"
-          >
-            <ExternalLink size={16} />
-          </a>
-          <button
-            onClick={() => setIsFullscreen(!isFullscreen)}
-            className="p-2 text-cine-muted hover:text-white transition-colors"
-            title="Toggle fullscreen"
-          >
-            <Maximize2 size={16} />
-          </button>
-        </div>
-      </div>
-
-      {/* Source selector */}
-      <div className="flex items-center gap-2 px-4 py-3 bg-cine-surface/80 border-b border-cine-border flex-wrap">
-        <span className="text-cine-muted text-xs font-medium mr-1">Sources:</span>
-        {SOURCES.map((src) => (
-          <button
-            key={src.key}
-            onClick={() => handleSourceChange(src.key)}
-            className={`px-4 py-1.5 rounded-full text-xs font-bold text-white transition-all ${
-              activeSource === src.key
-                ? src.color + ' ring-2 ring-white/30 shadow-lg scale-105'
-                : 'bg-cine-border hover:bg-cine-surface-2 text-cine-muted hover:text-white'
-            }`}
-          >
-            {src.label}
-          </button>
-        ))}
-        <span className="text-cine-muted text-xs ml-2 hidden sm:inline">
-          Try another source if playback fails
+    <div
+      ref={containerRef}
+      className={`w-full bg-black flex flex-col ${
+        isFullscreen ? 'fixed inset-0 z-50' : ''
+      }`}
+    >
+      {/* ── Source bar ── */}
+      <div className="flex items-center gap-2 px-3 py-2.5 bg-[#0d0d0d] border-b border-white/10 flex-wrap">
+        {/* Title */}
+        <span className="text-white/70 text-xs font-medium truncate max-w-[200px] sm:max-w-xs hidden sm:block">
+          {title}{episodeLabel}
         </span>
+
+        <div className="flex items-center gap-1.5 ml-auto flex-wrap">
+          <span className="text-white/40 text-xs mr-1">Source:</span>
+          {SOURCES.map((src) => (
+            <button
+              key={src.key}
+              type="button"
+              onClick={() => handleSourceChange(src.key)}
+              className={`px-3 py-1 rounded-full text-xs font-bold transition-all touch-manipulation ${
+                activeSource === src.key
+                  ? src.activeClass + ' shadow-md scale-105'
+                  : 'bg-white/10 text-white/60 hover:bg-white/20 hover:text-white active:scale-95'
+              }`}
+            >
+              {src.label}
+            </button>
+          ))}
+
+          {/* ✅ Single fullscreen button — bottom right of bar */}
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            className="ml-1 p-1.5 rounded-md bg-white/10 hover:bg-white/20 active:scale-95 text-white/70 hover:text-white transition-all touch-manipulation"
+            aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+            title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+          >
+            {isFullscreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
+          </button>
+        </div>
       </div>
 
-      {/* Iframe container */}
-      <div className={`video-container ${isFullscreen ? 'h-[calc(100vh-112px)]' : ''}`}>
+      {/* ── Player area ── */}
+      <div
+        className="video-container"
+        style={isFullscreen ? { paddingTop: 0, flex: 1, position: 'relative' } : undefined}
+      >
         {iframeError ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-cine-bg text-center p-8">
-            <AlertCircle className="text-cine-muted mb-4" size={48} />
-            <h3 className="text-white font-bold text-lg mb-2">Playback Error</h3>
-            <p className="text-cine-muted text-sm mb-6">
-              This source is unavailable. Please try another source above.
-            </p>
-            <div className="flex gap-3">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-cine-bg text-center p-6">
+            <AlertCircle className="text-cine-muted mb-3" size={40} />
+            <h3 className="text-white font-bold text-base mb-1">Source Unavailable</h3>
+            <p className="text-cine-muted text-sm mb-5">Try another source below.</p>
+            <div className="flex flex-wrap gap-2 justify-center">
               {SOURCES.filter((s) => s.key !== activeSource).map((src) => (
                 <button
                   key={src.key}
+                  type="button"
                   onClick={() => handleSourceChange(src.key)}
-                  className={`px-5 py-2 rounded-lg text-sm font-bold text-white ${src.color} transition-colors`}
+                  className={`px-4 py-2 rounded-lg text-sm font-bold text-white ${src.activeClass} touch-manipulation`}
                 >
                   Try {src.label}
                 </button>
@@ -136,16 +168,25 @@ export default function VideoPlayer({ tmdbId, mediaType, season, episode, title 
             title={title || 'Video Player'}
             allowFullScreen
             referrerPolicy="no-referrer"
-            allow="autoplay; fullscreen; picture-in-picture"
+            allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
             className="absolute inset-0 w-full h-full border-0"
+            style={{ display: 'block' }}
           />
         )}
       </div>
 
-      {/* Disclaimer */}
-      <div className="bg-cine-surface px-4 py-2 text-center">
-        <p className="text-cine-muted text-xs">
-          Video content is provided by third-party embed services. Use an ad blocker for the best experience.
+      {/* ── Retry / disclaimer bar ── */}
+      <div className="flex items-center justify-between px-3 py-2 bg-[#0d0d0d] border-t border-white/10 gap-2 flex-wrap">
+        <button
+          type="button"
+          onClick={() => { setIframeError(false); handleSourceChange(activeSource); }}
+          className="flex items-center gap-1.5 text-white/40 hover:text-white/70 text-xs transition-colors touch-manipulation"
+        >
+          <RefreshCw size={12} />
+          Reload
+        </button>
+        <p className="text-white/30 text-xs text-center flex-1">
+          If ads appear, install uBlock Origin · Try another source if playback fails
         </p>
       </div>
     </div>
