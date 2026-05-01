@@ -92,8 +92,8 @@ export default function VideoPlayer({
         isFullscreen ? 'fixed inset-0 z-[9999]' : ''
       }`}
     >
-      {/* ══ CONTROL BAR ═══════════════════════════════════════════════════════ */}
-      <div className="flex items-center gap-2 px-3 sm:px-4 py-2.5 bg-[#0c0c0c] border-b border-white/8 flex-wrap sm:flex-nowrap">
+      {/* ══ CONTROL BAR — hidden in fullscreen so only vidsrc native controls show ══ */}
+      <div className={`flex items-center gap-2 px-3 sm:px-4 py-2.5 bg-[#0c0c0c] border-b border-white/8 flex-wrap sm:flex-nowrap ${isFullscreen ? 'hidden' : ''}`}>
 
         {/* ① X / Close — goes back to detail page */}
         {backHref && (
