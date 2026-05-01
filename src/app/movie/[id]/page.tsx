@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Play, Star, Clock, Calendar, ArrowLeft, ExternalLink } from 'lucide-react';
+import { Play, Star, Clock, Calendar, ArrowLeft } from 'lucide-react';
 import type { Metadata } from 'next';
 import {
   getMovieDetails,
@@ -13,6 +13,7 @@ import {
   formatRuntime,
 } from '@/lib/tmdb';
 import MovieRow from '@/components/MovieRow';
+import TrailerButton from '@/components/TrailerButton';
 
 export const revalidate = 3600;
 
@@ -172,15 +173,7 @@ export default async function MovieDetailPage({ params }: PageProps) {
                 Watch Now
               </Link>
               {trailer && (
-                <a
-                  href={`https://www.youtube.com/watch?v=${trailer.key}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 bg-cine-surface hover:bg-cine-surface-2 text-white font-semibold px-6 py-3 rounded-lg border border-cine-border transition-colors text-sm sm:text-base"
-                >
-                  <ExternalLink size={18} />
-                  Trailer
-                </a>
+                <TrailerButton trailerKey={trailer.key} title={movie.title} />
               )}
             </div>
           </div>
