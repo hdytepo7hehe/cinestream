@@ -193,8 +193,9 @@ export default function VideoPlayer({
             allowFullScreen
             referrerPolicy="no-referrer"
             allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-            // sandbox restricts pop-ups, new windows, and navigation — primary ad-blocking layer
-            sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+            // sandbox: allow-popups needed for internal player popups (DRM, quality picker)
+            // allow-popups-to-escape-sandbox is intentionally EXCLUDED — blocks ads opening new browser tabs/windows
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation allow-storage-access-by-user-activation"
             className="absolute inset-0 w-full h-full border-0"
           />
         )}
