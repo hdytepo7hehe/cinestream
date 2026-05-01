@@ -12,7 +12,7 @@ interface VideoPlayerProps {
   season?: number;
   episode?: number;
   title?: string;
-  backHref?: string;  // Where X button goes
+  backHref?: string;
 }
 
 const SOURCES: { key: SourceKey; label: string }[] = [
@@ -43,18 +43,16 @@ export default function VideoPlayer({
   const [activeSource, setActiveSource] = useState<SourceKey>('vidsrc.xyz');
   const [iframeError,  setIframeError]  = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [iframeKey,    setIframeKey]    = useState(0); // force-remount on reload
+  const [iframeKey,    setIframeKey]    = useState(0);
 
   const embedUrl = buildUrl(activeSource, tmdbId, mediaType, season, episode);
 
-  // ── Sync fullscreen state with browser events ──────────────────────────────
   useEffect(() => {
     const onFSChange = () => setIsFullscreen(!!document.fullscreenElement);
     document.addEventListener('fullscreenchange', onFSChange);
     return () => document.removeEventListener('fullscreenchange', onFSChange);
   }, []);
 
-  // ── Fullscreen toggle ──────────────────────────────────────────────────────
   const toggleFullscreen = useCallback(async () => {
     const el = containerRef.current;
     if (!el) return;
@@ -69,7 +67,6 @@ export default function VideoPlayer({
     }
   }, []);
 
-  // ── Source / reload helpers ───────────────────────────────────────────────
   const changeSource = (src: SourceKey) => {
     setActiveSource(src);
     setIframeError(false);
@@ -92,75 +89,66 @@ export default function VideoPlayer({
         isFullscreen ? 'fixed inset-0 z-[9999]' : ''
       }`}
     >
-      {/* ══ CONTROL BAR — hidden in fullscreen so only vidsrc native controls show ══ */}
-      <div className={`flex items-center gap-2 px-3 sm:px-4 py-2.5 bg-[#0c0c0c] border-b border-white/8 flex-wrap sm:flex-nowrap ${isFullscreen ? 'hidden' : ''}`}>
+      {/* ══ TOP CONTROL BAR — hidden in fullscreen ══════════════════════════ */}
+      {!isFullscreen && (
+        <div className="flex items-center gap-2 px-3 sm:px-4 py-2.5 bg-[#0c0c0c] border-b border-white/8 flex-wrap sm:flex-nowrap">
 
-        {/* ① X / Close — goes back to detail page */}
-        {backHref && (
+          {/* X / Close */}
+          {backHref && (
+            <button
+              type="button"
+              onClick={() => router.push(backHref)}
+              className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-90 text-white/70 hover:text-white transition-all touch-manipulation flex-shrink-0"
+              aria-label="Close player"
+              title="Close"
+            >
+              <X size={15} />
+            </button>
+          )}
+
+          {/* Title */}
+          <span className="text-white/60 text-xs font-medium truncate flex-1 min-w-0">
+            {title}{epLabel}
+          </span>
+
+          {/* Source buttons */}
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <span className="text-white/30 text-xs hidden sm:inline">Source:</span>
+            {SOURCES.map((src) => (
+              <button
+                key={src.key}
+                type="button"
+                onClick={() => changeSource(src.key)}
+                className={`px-3 py-1 rounded-full text-xs font-bold transition-all touch-manipulation ${
+                  activeSource === src.key
+                    ? src.key === 'vidsrc.xyz' ? 'bg-cine-red text-white shadow scale-105'
+                    : src.key === 'vidsrc.me'  ? 'bg-blue-600 text-white shadow scale-105'
+                    : 'bg-purple-600 text-white shadow scale-105'
+                    : 'bg-white/10 text-white/50 hover:bg-white/20 hover:text-white active:scale-95'
+                }`}
+              >
+                {src.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Reload */}
           <button
             type="button"
-            onClick={() => router.push(backHref)}
-            className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-90 text-white/70 hover:text-white transition-all touch-manipulation flex-shrink-0"
-            aria-label="Close player"
-            title="Close"
+            onClick={reload}
+            className="flex items-center justify-center w-8 h-8 rounded-full bg-white/8 hover:bg-white/18 active:scale-90 text-white/50 hover:text-white transition-all touch-manipulation flex-shrink-0"
+            aria-label="Reload"
+            title="Reload"
           >
-            <X size={15} />
+            <RefreshCw size={13} />
           </button>
-        )}
 
-        {/* Title */}
-        <span className="text-white/60 text-xs font-medium truncate flex-1 min-w-0 hidden sm:block">
-          {title}{epLabel}
-        </span>
-        <span className="text-white/60 text-xs font-medium truncate flex-1 min-w-0 sm:hidden">
-          {epLabel || title}
-        </span>
-
-        {/* ② Source buttons */}
-        <div className="flex items-center gap-1.5 flex-shrink-0">
-          <span className="text-white/30 text-xs hidden sm:inline">Source:</span>
-          {SOURCES.map((src) => (
-            <button
-              key={src.key}
-              type="button"
-              onClick={() => changeSource(src.key)}
-              className={`px-3 py-1 rounded-full text-xs font-bold transition-all touch-manipulation ${
-                activeSource === src.key
-                  ? src.key === 'vidsrc.xyz' ? 'bg-cine-red text-white shadow scale-105'
-                  : src.key === 'vidsrc.me'  ? 'bg-blue-600 text-white shadow scale-105'
-                  : 'bg-purple-600 text-white shadow scale-105'
-                  : 'bg-white/10 text-white/50 hover:bg-white/20 hover:text-white active:scale-95'
-              }`}
-            >
-              {src.label}
-            </button>
-          ))}
+          {/* NO fullscreen button here — it lives at the bottom-right overlay instead */}
         </div>
+      )}
 
-        {/* ③ Reload */}
-        <button
-          type="button"
-          onClick={reload}
-          className="flex items-center justify-center w-8 h-8 rounded-full bg-white/8 hover:bg-white/18 active:scale-90 text-white/50 hover:text-white transition-all touch-manipulation flex-shrink-0"
-          aria-label="Reload player"
-          title="Reload"
-        >
-          <RefreshCw size={13} />
-        </button>
-
-        {/* ④ Fullscreen — ONLY button, no duplicate below */}
-        <button
-          type="button"
-          onClick={toggleFullscreen}
-          className="flex items-center justify-center w-8 h-8 rounded-full bg-white/8 hover:bg-white/18 active:scale-90 text-white/50 hover:text-white transition-all touch-manipulation flex-shrink-0"
-          aria-label={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
-          title={isFullscreen ? 'Exit fullscreen (Esc)' : 'Fullscreen'}
-        >
-          {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
-        </button>
-      </div>
-
-      {/* ══ PLAYER ════════════════════════════════════════════════════════════ */}
+      {/* ══ PLAYER ═══════════════════════════════════════════════════════════ */}
+      {/* Wrapper is relative so we can overlay our fullscreen button on top of vidsrc's broken one */}
       <div
         className="video-container"
         style={isFullscreen ? { paddingTop: 0, flex: 1, position: 'relative' } : undefined}
@@ -169,7 +157,7 @@ export default function VideoPlayer({
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0a0a] text-center p-6">
             <AlertCircle className="text-white/20 mb-3" size={44} />
             <h3 className="text-white font-bold text-base mb-1">Source Unavailable</h3>
-            <p className="text-white/40 text-sm mb-5 max-w-xs">
+            <p className="text-white/40 text-sm mb-4 max-w-xs">
               This source isn't loading. Try switching to another source.
             </p>
             <div className="flex flex-wrap gap-2 justify-center">
@@ -193,9 +181,24 @@ export default function VideoPlayer({
             allowFullScreen
             referrerPolicy="no-referrer"
             allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-
             className="absolute inset-0 w-full h-full border-0"
           />
+        )}
+
+        {/* ── Our working fullscreen button overlaid on vidsrc's broken one ──
+            Positioned bottom-right to sit exactly on top of vidsrc's native
+            fullscreen icon. Transparent background so it's invisible until hover.
+            Hidden when already in fullscreen (vidsrc's bar is gone then too). */}
+        {!isFullscreen && !iframeError && (
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            className="absolute bottom-[6px] right-[6px] z-10 w-9 h-9 flex items-center justify-center rounded opacity-0 hover:opacity-100 bg-transparent hover:bg-black/40 text-white transition-all touch-manipulation"
+            aria-label="Enter fullscreen"
+            title="Fullscreen"
+          >
+            <Maximize2 size={16} />
+          </button>
         )}
       </div>
     </div>
