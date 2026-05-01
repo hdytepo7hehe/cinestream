@@ -50,7 +50,7 @@ export default function TrailerModal({ trailerKey, title, onClose }: TrailerModa
         <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
           <iframe
             className="absolute inset-0 w-full h-full rounded-xl"
-            src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&rel=0&modestbranding=1`}
+            src={`https://www.youtube-nocookie.com/embed/${trailerKey}?rel=0&modestbranding=1&playsinline=1`}
             title={`${title} Trailer`}
             allow="autoplay; fullscreen; picture-in-picture"
             allowFullScreen
