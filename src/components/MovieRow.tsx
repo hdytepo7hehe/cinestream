@@ -49,6 +49,9 @@ export default function MovieRow({ title, items, mediaType }: MovieRowProps) {
     ? emojis.map((e, i) => (
         <span key={i} className="row-title-emoji">{e}</span>
       ))
+    : null;
+  const titleText = emojis 
+    ? title.replace(/^[🔥▶️⭐🏆📺]+/, '') 
     : title;
 
   return (
@@ -57,7 +60,7 @@ export default function MovieRow({ title, items, mediaType }: MovieRowProps) {
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-white text-xl sm:text-2xl font-bold flex items-center gap-1">
           {displayTitle}
-          <span>{title.replace(/^[🔥▶️⭐🏆📺]+/, '')}</span>
+          <span>{titleText}</span>
         </h2>
         <span className="text-cine-muted text-sm">{items.length} titles</span>
       </div>
