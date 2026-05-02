@@ -11,6 +11,16 @@ interface MovieRowProps {
   mediaType: 'movie' | 'tv';
 }
 
+// Map specific titles to animated emojis
+const titleEmojis: Record<string, string[]> = {
+  'Trending This Week': ['🔥', '🔥', '🔥'],
+  'Now Playing': ['▶️', '▶️', '▶️'],
+  'Popular Movies': ['⭐', '⭐', '⭐'],
+  'Top Rated Movies': ['🏆', '🏆', '🏆'],
+  'Trending TV Shows': ['📺', '📺', '📺'],
+  'Popular TV Shows': ['📺', '📺', '📺'],
+};
+
 export default function MovieRow({ title, items, mediaType }: MovieRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -33,11 +43,22 @@ export default function MovieRow({ title, items, mediaType }: MovieRowProps) {
 
   if (!items || items.length === 0) return null;
 
+  // Check if title has emojis
+  const emojis = titleEmojis[title];
+  const displayTitle = emojis 
+    ? emojis.map((e, i) => (
+        <span key={i} className="row-title-emoji">{e}</span>
+      ))
+    : title;
+
   return (
     <div className="px-4 sm:px-6 lg:px-8 group/row">
       {/* Row title */}
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-white text-xl sm:text-2xl font-bold">{title}</h2>
+        <h2 className="text-white text-xl sm:text-2xl font-bold flex items-center gap-1">
+          {displayTitle}
+          <span>{title.replace(/^[🔥▶️⭐🏆📺]+/, '')}</span>
+        </h2>
         <span className="text-cine-muted text-sm">{items.length} titles</span>
       </div>
 
