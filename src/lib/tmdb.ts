@@ -2,6 +2,20 @@ const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY || '';
 const BASE_URL = process.env.NEXT_PUBLIC_TMDB_BASE_URL || 'https://api.themoviedb.org/3';
 export const IMAGE_BASE = process.env.NEXT_PUBLIC_TMDB_IMAGE_BASE || 'https://image.tmdb.org/t/p';
 
+// Check if API key is valid (not empty and not placeholder)
+const hasValidApiKey = API_KEY && !API_KEY.includes('your_') && API_KEY.length > 20;
+
+// ─── Empty Fallback Data (for missing API key) ─────────────────────────────
+
+const EMPTY_MOVIE_PAGE: PaginatedResponse<Movie> = { page: 1, results: [], total_pages: 1, total_results: 0 };
+const EMPTY_TV_PAGE: PaginatedResponse<TVShow> = { page: 1, results: [], total_pages: 1, total_results: 0 };
+const EMPTY_DETAIL: MovieDetails = {
+  id: 0, title: '', overview: '', poster_path: null, backdrop_path: null,
+  release_date: '', vote_average: 0, vote_count: 0, genre_ids: [],
+  credits: { cast: [], crew: [] }, videos: { results: [] },
+  similar: EMPTY_MOVIE_PAGE, recommendations: EMPTY_MOVIE_PAGE,
+};
+
 // ─── TypeScript Interfaces ────────────────────────────────────────────────────
 
 export interface Movie {
@@ -190,6 +204,18 @@ export function getProfileUrl(path: string | null, size: 'w45' | 'w185' | 'h632'
 // ─── Fetch Helper ─────────────────────────────────────────────────────────────
 
 async function tmdbFetch<T>(endpoint: string, params: Record<string, string> = {}, revalidate = 3600): Promise<T> {
+  // Return empty data if no valid API key (build/dev without key)
+  if (!hasValidApiKey) {
+    console.warn(`TMDb: Missing or invalid API key for ${endpoint}, returning empty data`);
+    // Return appropriate empty type based on endpoint
+    if (endpoint.match(/\/movie\/\d+/) || endpoint.match(/\/tv\/\d+/)) {
+      return EMPTY_DETAIL as T;
+    }
+    if (endpoint.includes('movie')) return EMPTY_MOVIE_PAGE as T;
+    if (endpoint.includes('tv')) return EMPTY_TV_PAGE as T;
+    return { page: 1, results: [], total_pages: 1, total_results: 0 } as T;
+  }
+
   const url = new URL(`${BASE_URL}${endpoint}`);
   url.searchParams.set('api_key', API_KEY);
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
