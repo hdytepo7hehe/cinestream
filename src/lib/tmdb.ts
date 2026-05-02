@@ -1,6 +1,7 @@
 const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY || '';
 const BASE_URL = process.env.NEXT_PUBLIC_TMDB_BASE_URL || 'https://api.themoviedb.org/3';
 export const IMAGE_BASE = process.env.NEXT_PUBLIC_TMDB_IMAGE_BASE || 'https://image.tmdb.org/t/p';
+const V4_ACCESS_TOKEN = process.env.TMDB_READ_ACCESS_TOKEN || '';
 
 // Check if API key is valid (not empty and not placeholder)
 const hasValidApiKey = API_KEY && !API_KEY.includes('your_') && API_KEY.length > 20;
@@ -205,9 +206,8 @@ export function getProfileUrl(path: string | null, size: 'w45' | 'w185' | 'h632'
 
 async function tmdbFetch<T>(endpoint: string, params: Record<string, string> = {}, revalidate = 3600): Promise<T> {
   // Return empty data if no valid API key (build/dev without key)
-  if (!hasValidApiKey) {
-    console.warn(`TMDb: Missing or invalid API key for ${endpoint}, returning empty data`);
-    // Return appropriate empty type based on endpoint
+  if (!hasValidApiKey && !V4_ACCESS_TOKEN) {
+    console.warn(`TMDb: Missing API key for ${endpoint}, returning empty data`);
     if (endpoint.match(/\/movie\/\d+/) || endpoint.match(/\/tv\/\d+/)) {
       return EMPTY_DETAIL as T;
     }
@@ -217,10 +217,19 @@ async function tmdbFetch<T>(endpoint: string, params: Record<string, string> = {
   }
 
   const url = new URL(`${BASE_URL}${endpoint}`);
-  url.searchParams.set('api_key', API_KEY);
+  
+  // Use v4 bearer token if available, otherwise v3 API key
+  const headers: HeadersInit = {};
+  if (V4_ACCESS_TOKEN) {
+    headers['Authorization'] = `Bearer ${V4_ACCESS_TOKEN}`;
+  } else {
+    url.searchParams.set('api_key', API_KEY);
+  }
+  
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
 
   const res = await fetch(url.toString(), {
+    headers,
     next: { revalidate },
   });
 
