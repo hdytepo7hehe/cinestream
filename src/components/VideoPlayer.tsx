@@ -21,17 +21,23 @@ const SOURCES: { key: SourceKey; label: string }[] = [
   { key: 'vidsrc.to',  label: 'Source 3' },
 ];
 
-function buildUrl(src: SourceKey, id: number, type: 'movie' | 'tv', s?: number, e?: number) {
+// Allowed domains whitelist for security
+const ALLOWED_DOMAINS = ['vidsrc.xyz', 'vidsrc.me', 'vidsrc.to'];
+
+function buildUrl(src: SourceKey, id: number, type: 'movie' | 'tv', s?: number, e?: number): string {
+  // Validate id is a safe number
+  const safeId = Math.max(1, Math.floor(Number(id) || 1));
+  const safeSeason = Math.max(1, Math.floor(Number(s) || 1));
+  const safeEpisode = Math.max(1, Math.floor(Number(e) || 1));
+
   if (type === 'movie') {
-    if (src === 'vidsrc.xyz') return `https://vidsrc.xyz/embed/movie?tmdb=${id}`;
-    if (src === 'vidsrc.me')  return `https://vidsrc.me/embed/movie?tmdb=${id}`;
-    return `https://vidsrc.to/embed/movie/${id}`;
+    if (src === 'vidsrc.xyz') return `https://vidsrc.xyz/embed/movie?tmdb=${safeId}`;
+    if (src === 'vidsrc.me')  return `https://vidsrc.me/embed/movie?tmdb=${safeId}`;
+    return `https://vidsrc.to/embed/movie/${safeId}`;
   }
-  const season  = s ?? 1;
-  const episode = e ?? 1;
-  if (src === 'vidsrc.xyz') return `https://vidsrc.xyz/embed/tv?tmdb=${id}&season=${season}&episode=${episode}`;
-  if (src === 'vidsrc.me')  return `https://vidsrc.me/embed/tv?tmdb=${id}&season=${season}&episode=${episode}`;
-  return `https://vidsrc.to/embed/tv/${id}/${season}/${episode}`;
+  if (src === 'vidsrc.xyz') return `https://vidsrc.xyz/embed/tv?tmdb=${safeId}&season=${safeSeason}&episode=${safeEpisode}`;
+  if (src === 'vidsrc.me')  return `https://vidsrc.me/embed/tv?tmdb=${safeId}&season=${safeSeason}&episode=${safeEpisode}`;
+  return `https://vidsrc.to/embed/tv/${safeId}/${safeSeason}/${safeEpisode}`;
 }
 
 export default function VideoPlayer({
@@ -180,8 +186,10 @@ export default function VideoPlayer({
             title={`${title}${epLabel}`}
             allowFullScreen
             referrerPolicy="no-referrer"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
             allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
             className="absolute inset-0 w-full h-full border-0"
+            onError={() => setIframeError(true)}
           />
         )}
 

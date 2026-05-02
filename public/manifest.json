@@ -1,6 +1,6 @@
 {
-  "name": "CineStream",
-  "short_name": "CineStream",
+  "name": "CineWatchPH",
+  "short_name": "CineWatchPH",
   "description": "Watch movies and TV shows free. Netflix-style streaming with TMDb.",
   "start_url": "/",
   "display": "standalone",

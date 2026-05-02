@@ -2,33 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Base ─────────────────────────────────────────────────────────────────── */
+/* ─── CSS Variables ─────────────────────────────────────────────────────────── */
 
 :root {
   --cine-red: #e50914;
   --cine-bg: #0a0a0a;
   --cine-surface: #141414;
+  --cine-text: #e5e5e5;
+  --cine-muted: #808080;
+  --cine-border: #2a2a2a;
 }
 
-* {
+/* Light theme overrides */
+html.light {
+  --cine-bg: #ffffff;
+  --cine-surface: #f5f5f5;
+  --cine-text: #1a1a1a;
+  --cine-muted: #666666;
+  --cine-border: #dddddd;
+}
+
+*, ::before, ::after {
   box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent; /* Remove tap flash on mobile */
+  -webkit-tap-highlight-color: transparent;
 }
 
 html {
   scroll-behavior: smooth;
-  /* iOS momentum scrolling */
   -webkit-overflow-scrolling: touch;
 }
 
 body {
   background-color: var(--cine-bg);
-  color: #e5e5e5;
+  color: var(--cine-text);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   min-height: 100vh;
-  min-height: 100dvh; /* Dynamic viewport height — handles mobile browser bars */
+  min-height: 100dvh;
   overflow-x: hidden;
-  /* Safe area padding for notched phones */
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
 }
@@ -41,16 +51,29 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: var(--cine-bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2a2a2a;
+  background: var(--cine-border);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #444;
+}
+
+/* Light theme scrollbar */
+html.light ::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+
+html.light ::-webkit-scrollbar-thumb {
+  background: #cccccc;
+}
+
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: #aaaaaa;
 }
 
 /* ─── Shimmer / Skeleton ────────────────────────────────────────────────────── */
@@ -61,6 +84,10 @@ body {
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
     border-radius: 4px;
+  }
+
+  html.light .skeleton {
+    background: linear-gradient(90deg, #e0e0e0 25%, #d0d0d0 50%, #e0e0e0 75%);
   }
 }
 
@@ -109,6 +136,23 @@ body {
     );
 }
 
+html.light .hero-gradient {
+  background:
+    linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(255, 255, 255, 0.75) 40%,
+      rgba(255, 255, 255, 0.35) 70%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to top,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 0.7) 20%,
+      transparent 50%
+    );
+}
+
 /* ─── Card hover effects ────────────────────────────────────────────────────── */
 
 .movie-card {
@@ -118,26 +162,28 @@ body {
   user-select: none;
 }
 
-/* Disable scale transform on touch (hover doesn't work on mobile) */
 @media (hover: hover) {
   .movie-card:hover {
     transform: scale(1.04);
     z-index: 10;
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
   }
+
+  html.light .movie-card:hover {
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+  }
 }
 
-/* ─── Touch targets — minimum 44px on mobile ───────────────────────────────── */
+/* ─── Touch targets ────────────────────────────────────────────────────────── */
 
 .touch-manipulation {
   touch-action: manipulation;
 }
 
 button, a {
-  min-height: 0; /* Allow smaller only where intentional */
+  min-height: 0;
 }
 
-/* Minimum tap target size for interactive elements */
 button.touch-target,
 a.touch-target {
   min-height: 44px;
@@ -149,7 +195,7 @@ a.touch-target {
 .video-container {
   position: relative;
   width: 100%;
-  padding-top: 56.25%; /* 16:9 */
+  padding-top: 56.25%;
   background: #000;
 }
 
@@ -163,33 +209,15 @@ a.touch-target {
   display: block;
 }
 
-/* iOS fullscreen iframe */
 iframe[allowfullscreen] {
   -webkit-fullscreen: auto;
 }
 
 /* ─── Line clamp utilities ───────────────────────────────────────────────────── */
 
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-4 {
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
+.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-4 { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 
 /* ─── Navbar backdrop blur ──────────────────────────────────────────────────── */
 
@@ -198,82 +226,38 @@ iframe[allowfullscreen] {
   -webkit-backdrop-filter: blur(12px);
 }
 
-/* ─── Focus ring (accessibility) ────────────────────────────────────────────── */
+/* ─── Focus ring ────────────────────────────────────────────────────────────── */
 
 :focus-visible {
-  outline: 2px solid #e50914;
+  outline: 2px solid var(--cine-red);
   outline-offset: 2px;
 }
 
 /* ─── Animations ─────────────────────────────────────────────────────────────── */
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse-red { 0%, 100% { box-shadow: 0 0 0 0 rgba(229, 9, 20, 0.4); } 50% { box-shadow: 0 0 0 8px rgba(229, 9, 20, 0); } }
+@keyframes star-glow { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.3); } }
+@keyframes gradient-shift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+@keyframes emoji-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes emoji-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pulse-red {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(229, 9, 20, 0.4); }
-  50% { box-shadow: 0 0 0 8px rgba(229, 9, 20, 0); }
-}
-
-@keyframes star-glow {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.3); }
-}
-
-@keyframes gradient-shift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-@keyframes emoji-bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-}
-
-@keyframes emoji-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.15); }
-}
-
-.animate-fade-in  { animation: fadeIn  0.4s ease-in-out; }
+.animate-fade-in { animation: fadeIn 0.4s ease-in-out; }
 .animate-slide-up { animation: slideUp 0.35s ease-out; }
 .animate-pulse-red { animation: pulse-red 2s infinite; }
 .animate-star-glow { animation: star-glow 2s infinite; }
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient-shift 3s ease infinite;
-}
+.animate-gradient { background-size: 200% 200%; animation: gradient-shift 3s ease infinite; }
 
-/* Animated emojis for movie row titles */
-.row-title-emoji {
-  display: inline-block;
-  animation: emoji-bounce 2s ease-in-out infinite;
-}
-
+.row-title-emoji { display: inline-block; animation: emoji-bounce 2s ease-in-out infinite; }
 .row-title-emoji:nth-child(2) { animation-delay: 0.2s; }
 .row-title-emoji:nth-child(3) { animation-delay: 0.4s; }
 
-/* ─── Mobile: prevent rubber-band on player page ───────────────────────────── */
+/* ─── Mobile ──────────────────────────────────────────────────────────────── */
 
 @media (max-width: 640px) {
-  /* Make movie card slightly larger on small screens */
-  .movie-row-scroll {
-    gap: 6px;
-  }
-
-  /* Bigger tap targets on mobile nav */
-  nav a, nav button {
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
+  .movie-row-scroll { gap: 6px; }
+  nav a, nav button { padding-top: 10px; padding-bottom: 10px; }
 }
 
 /* ─── Gradient text ─────────────────────────────────────────────────────────── */
@@ -283,6 +267,10 @@ iframe[allowfullscreen] {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+html.light .gradient-text {
+  background: linear-gradient(135deg, #333 0%, #666 100%);
 }
 
 /* ─── Rating badge ───────────────────────────────────────────────────────────── */
@@ -300,13 +288,12 @@ iframe[allowfullscreen] {
   color: #ff6b6b;
 }
 
+html.light .rating-badge {
+  background: rgba(229, 9, 20, 0.1);
+  border-color: rgba(229, 9, 20, 0.25);
+}
+
 /* ─── Hero transition ───────────────────────────────────────────────────────── */
 
-.hero-transition {
-  animation: heroFade 0.8s ease-in-out;
-}
-
-@keyframes heroFade {
-  from { opacity: 0.5; }
-  to { opacity: 1; }
-}
+.hero-transition { animation: heroFade 0.8s ease-in-out; }
+@keyframes heroFade { from { opacity: 0.5; } to { opacity: 1; } }

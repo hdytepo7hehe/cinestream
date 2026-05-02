@@ -1,5 +1,6 @@
 import HeroWrapper from '@/components/HeroWrapper';
 import MovieRow from '@/components/MovieRow';
+import ContinueWatchingRow from '@/components/ContinueWatchingRow';
 import {
   getTrendingMovies,
   getPopularMovies,
@@ -40,12 +41,13 @@ export default async function HomePage() {
       <HeroWrapper items={heroItems} />
 
       <div className="relative z-10 -mt-24 sm:-mt-32 pb-16 space-y-6 sm:space-y-8">
-        <MovieRow title="🔥 Trending This Week"  items={trendingMovies.results} mediaType="movie" />
-        <MovieRow title="▶️ Now Playing"          items={nowPlaying.results}     mediaType="movie" />
-        <MovieRow title="⭐ Popular Movies"       items={popularMovies.results}  mediaType="movie" />
-        <MovieRow title="🏆 Top Rated Movies"    items={topRatedMovies.results} mediaType="movie" />
-        <MovieRow title="📺 Trending TV Shows"   items={trendingTV.results}     mediaType="tv"    />
-        <MovieRow title="📺 Popular TV Shows"    items={popularTV.results}      mediaType="tv"    />
+        <ContinueWatchingRow />
+        <MovieRow title="Trending This Week"  items={trendingMovies.results} mediaType="movie" />
+        <MovieRow title="Now Playing"          items={nowPlaying.results}     mediaType="movie" />
+        <MovieRow title="Popular Movies"       items={popularMovies.results}  mediaType="movie" />
+        <MovieRow title="Top Rated Movies"    items={topRatedMovies.results} mediaType="movie" />
+        <MovieRow title="Trending TV Shows"   items={trendingTV.results}     mediaType="tv"    />
+        <MovieRow title="Popular TV Shows"    items={popularTV.results}      mediaType="tv"    />
       </div>
     </div>
   );

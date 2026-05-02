@@ -3,8 +3,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { Search, X, Menu, ChevronDown } from 'lucide-react';
+import { Search, X, Menu, ChevronDown, Sun, Moon } from 'lucide-react';
 import { MOVIE_GENRES, TV_GENRES } from '@/lib/genres';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function Navbar() {
   const [scrolled,        setScrolled]        = useState(false);
@@ -16,6 +17,7 @@ export default function Navbar() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const router   = useRouter();
   const pathname = usePathname();
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -57,7 +59,7 @@ export default function Navbar() {
             {/* Logo */}
             <Link href="/" className="flex-shrink-0">
               <span className="text-cine-red font-black text-xl sm:text-2xl tracking-tight">
-                CINE<span className="text-white">STREAM</span>
+                CINE<span className="text-white">WATCH<span className="text-cine-red">PH</span></span>
               </span>
             </Link>
 
@@ -116,6 +118,14 @@ export default function Navbar() {
 
             {/* Right side */}
             <div className="flex items-center gap-2 ml-auto">
+              <button
+                onClick={toggleTheme}
+                className="p-2 text-white/60 hover:text-white transition-colors rounded-md hover:bg-white/5"
+                aria-label="Toggle theme"
+              >
+                {theme === 'dark' ? <Sun size={19} /> : <Moon size={19} />}
+              </button>
+
               {searchOpen ? (
                 <form onSubmit={handleSearch} className="flex items-center">
                   <div className="flex items-center bg-[#1a1a1a] border border-white/15 rounded-full overflow-hidden pr-2">
