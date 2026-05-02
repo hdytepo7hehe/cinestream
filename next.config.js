@@ -9,6 +9,9 @@ const nextConfig = {
       },
     ],
   },
+  // Ensure consistent builds
+  reactStrictMode: true,
+  swcMinify: true,
 };
 
 module.exports = nextConfig;
